@@ -93,27 +93,19 @@ __on_player_uses_item(player,item,hand)->(
 );
 
 __on_tick()->(
-    run('execute as @a run script in we run if(_checkGamemode(),
-			positions=_getPlayerData(\'positions\');
-			x1=positions:0:0;
-			y1=positions:0:1;
-			z1=positions:0:2;
-			x2=positions:1:0;
-			y2=positions:1:1;
-			z2=positions:1:2;
-			particle_rect(\'dust 1 0 0 0.5\', x1,y1,z1,x1+1,y1+1,z1+1,1);
-			particle_rect(\'dust 0 1 0 0.5\', x2,y2,z2,x2+1,y2+1,z2+1,1);
-			if(_checkPositions()&&_getPlayerData(\'show_selection\'),
-				xmin=min(x1,x2);
-				ymin=min(y1,y2);
-				zmin=min(z1,z2);
-				xmax=max(x1,x2);
-				ymax=max(y1,y2);
-				zmax=max(z1,z2);
-				particle_rect(\'dust 0 0 1 1\', xmin,ymin,zmin,xmax+1,ymax+1,zmax+1,4)
-			)
+    for(players('*'),
+        if(!_checkGamemode(),return());
+		positions=_getPlayerData('positions');
+		l(x1,y1,z1)=positions:0;
+		l(x2,y2,z2)=positions:1;
+		particle_rect('dust 1 0 0 0.5', x1,y1,z1,x1+1,y1+1,z1+1,1);
+		particle_rect('dust 0 1 0 0.5', x2,y2,z2,x2+1,y2+1,z2+1,1);
+		if(_checkPositions()&&_getPlayerData('show_selection'),
+		    l(xmin,ymin,zmin)=l(min(x1,x2),min(y1,y2),min(z1,z2));
+		    l(xmax,ymax,zmax)=l(max(x1,x2),max(y1,y2),max(z1,z2));
+			particle_rect('dust 0 0 1 1', xmin,ymin,zmin,xmax+1,ymax+1,zmax+1,4)
 		)
-	')
+	)
 );
 //'
 //Lib
