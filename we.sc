@@ -275,24 +275,8 @@ _setPos(id,pos)->(
 );
 
 _getLookingPos()->(
-	pos=query(player(),'trace',global_brush_distance/global_brush_step);
-	x=get(pos,0);
-	y=get(pos,1)+1.625;
-	z=get(pos,2);
-	pitch=-query(player(),'pitch');
-	yaw=query(player(),'yaw')+90;
-	xstep=global_brush_step*cos(pitch)*cos(yaw);
-	zstep=global_brush_step*cos(pitch)*sin(yaw);
-	ystep=global_brush_step*sin(pitch);
-	while(block(x,y,z)==block('air')&&y>=0&&y<256,global_brush_distance/global_brush_step,
-		x+=xstep;
-		y+=ystep;
-		z+=zstep;
-	);
-	if(block(x,y,z)==block('air'),
-		return(null)
-	);
-	return(l(x,y,z))
+	l(x,y,z)=query(player(),'trace',global_brush_distance/global_brush_step,'blocks');
+    return(l(round(x),round(y),round(z)))
 );
 
 _getDirectionFromAngle(angle)->(
