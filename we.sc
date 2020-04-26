@@ -20,7 +20,7 @@ __on_player_clicks_block(player, block, face)->(
 		schedule(0,'_scheduledplace',block(pos));
 		without_updates(set(pos,'air'));
 		message=_setPos(0,pos);
-		if(message!=null,
+		if(message,
 			print(message)
 		);
 	)
@@ -31,16 +31,25 @@ _scheduledPlace(block)->(
 );
 
 __on_player_right_clicks_block(player,item,hand,block,face,hitvec)->(
-	if(_checkGamemode()&&get(item,0)==global_wand&&hand=='mainhand',
+	if(_checkGamemode()&&item:0==global_wand&&hand=='mainhand',
 		message=_setPos(1,pos(block));
-		if(message!=null,
+		if(message,
 			print(message)
 		)
 	)
 );
 
 __on_player_uses_item(player,item,hand)->(
-	if(_checkGamemode()&&get(item,0)==global_brush&&hand=='mainhand',
+    if(hand!='mainhand'||!_checkGamemode(),return());
+    block=block(query(player,'look')*5+pos(player));
+
+    if(item:0==global_wand,
+        message=_setPos(1,pos(block));
+        if(message,
+        	print(message)
+        )
+    )
+	if(item:0==global_brush,
 		if(!_checkPallet(),
 			print(_getErrorPallet());
 			return()
@@ -266,7 +275,7 @@ _setPos(id,pos)->(
 );
 
 _getLookingPos()->(
-	pos=pos(player());
+	pos=query(player(),'trace',global_brush_distance/global_brush_step);
 	x=get(pos,0);
 	y=get(pos,1)+1.625;
 	z=get(pos,2);
