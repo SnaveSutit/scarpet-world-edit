@@ -20,24 +20,20 @@ __on_player_clicks_block(player, block, face)->(
 		schedule(0,'_scheduledPlace',block(pos));
 		without_updates(set(pos,'air'));
 		message=_setPos(0,pos);
-		if(message,
-			print(message)
-		);
+		print(message)
 	)
 );
 
-_holdsWand()->return get(query(player(),'holds','mainhand'),0)==global_wand
+_holdsWand()->return get(query(player(),'holds','mainhand'),0)==global_wand;
 
 _scheduledPlace(block)->(
-	without_updates(set(pos(block),block));
+	without_updates(set(pos(block),block))
 );
 
 __on_player_right_clicks_block(player,item,hand,block,face,hitvec)->(
 	if(_checkGamemode()&&_holdsWand(),
 		message=_setPos(1,pos(block));
-		if(message,
-			print(message)
-		)
+		print(message)
 	)
 );
 
@@ -46,10 +42,8 @@ __on_player_uses_item(player,item,hand)->(
     block=block(query(player,'look')*5+pos(player));
 
     if(_holdsWand(),
-        message=_setPos(1,pos(block));
-        if(message,
-        	print(message)
-        )
+        message=\(1,pos(block));
+        print(message)
     )
 	if(item:0==global_brush,
 		if(!_checkPallet(),
@@ -67,7 +61,6 @@ __on_player_uses_item(player,item,hand)->(
 		cx=get(pos,0);
 		cy=get(pos,1);
 		cz=get(pos,2);
-		size=length(pallet);
 		st=-radius+1;
 		x=st;
 		while(x<radius,1000,
@@ -82,7 +75,7 @@ __on_player_uses_item(player,item,hand)->(
 					);
 					distSqr=x*x+y*y+z*z;
 					if(distSqr<radius*radius,
-						_setBlock(pos,_randomFrom(pallet,size))
+						_setBlock(pos,_randomFrom(pallet))
 					);
 					z+=1
 				);
@@ -130,8 +123,8 @@ _getAngle2d(x,z)->(
 	return(acos(x/d))
 );
 
-_randomFrom(list,size)->(
-	return(get(list,floor(rand(size))))
+_randomFrom(list)->(
+	return(get(list,floor(rand(length(list)))))
 );
 
 _createPlayerData()->(
@@ -583,7 +576,6 @@ random_fill()->(
 		return(_getErrorPallet())
 	);
 	pallet=_getPlayerData('pallet');
-	size=length(pallet);
 	xmin=min(x1,x2);
 	ymin=min(y1,y2);
 	zmin=min(z1,z2);
@@ -596,7 +588,7 @@ random_fill()->(
 		while(y<=ymax,1000,
 			z=zmin;
 			while(z<=zmax,1000,
-				_setBlock(l(x,y,z),_randomFrom(pallet,size));
+				_setBlock(l(x,y,z),_randomFrom(pallet));
 				z+=1
 			);
 			y+=1
@@ -626,7 +618,6 @@ random_fill_replace(block)->(
 		return(_getErrorPallet())
 	);
 	pallet=_getPlayerData('pallet');
-	size=length(pallet);
 	replaced=0;
 	xmin=min(x1,x2);
 	ymin=min(y1,y2);
@@ -641,7 +632,7 @@ random_fill_replace(block)->(
 			z=zmin;
 			while(z<=zmax,1000,
 				if(block(x,y,z)==block(block),
-					_setBlock(l(x,y,z),_randomFrom(pallet,size));
+					_setBlock(l(x,y,z),_randomFrom(pallet));
 					replaced+=1
 				);
 				z+=1
