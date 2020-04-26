@@ -15,7 +15,7 @@ global_maxSize=1000000;
 //Events
 
 __on_player_clicks_block(player, block, face)->(
-	if(_checkGamemode()&&get(query(player,'holds','mainhand'),0)==global_wand,
+	if(_checkGamemode()&&_holdsWand(),
 		pos=pos(block);
 		schedule(0,'_scheduledPlace',block(pos));
 		without_updates(set(pos,'air'));
@@ -26,12 +26,14 @@ __on_player_clicks_block(player, block, face)->(
 	)
 );
 
+_holdsWand()->return get(query(player(),'holds','mainhand'),0)==global_wand
+
 _scheduledPlace(block)->(
 	without_updates(set(pos(block),block));
 );
 
 __on_player_right_clicks_block(player,item,hand,block,face,hitvec)->(
-	if(_checkGamemode()&&item:0==global_wand&&hand=='mainhand',
+	if(_checkGamemode()&&_holdsWand(),
 		message=_setPos(1,pos(block));
 		if(message,
 			print(message)
@@ -43,7 +45,7 @@ __on_player_uses_item(player,item,hand)->(
     if(hand!='mainhand'||!_checkGamemode(),return());
     block=block(query(player,'look')*5+pos(player));
 
-    if(item:0==global_wand,
+    if(_holdsWand(),
         message=_setPos(1,pos(block));
         if(message,
         	print(message)
