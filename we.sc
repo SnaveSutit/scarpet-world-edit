@@ -132,14 +132,15 @@ _randomFrom(list,size)->(
 );
 
 _createPlayerData()->(
-	put(global_playerData,player(),m());
-	put(get(global_playerData,player()),'positions',l(null, null));
-	put(get(global_playerData,player()),'pallet',null);
-	put(get(global_playerData,player()),'history',l(l()));
-	put(get(global_playerData,player()),'brush_size',1);
-	put(get(global_playerData,player()),'brush_replace','all');
-	put(get(global_playerData,player()),'clipboard',m(l('pos',null),l('blocks',l())));
-	put(get(global_playerData,player()),'show_selection',0)
+	put(global_playerData,player(),m(
+	    l('positions',l(null,null)),
+	    l('pallet',null),
+	    l('history',l(l())),
+	    l('brush_size',1),
+	    l('brush_replace','all'),
+	    l('clipboard',m(l('pos',null),l('blocks',l()))),
+	    l('show_selection',0)
+	));
 );
 
 _getPlayerData(fieldName)->(
