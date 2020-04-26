@@ -58,30 +58,19 @@ __on_player_uses_item(player,item,hand)->(
 		);
 		radius=_getPlayerData('brush_size');
 		replace=_getPlayerData('brush_replace');
-		cx=get(pos,0);
-		cy=get(pos,1);
-		cz=get(pos,2);
+		l(cx,cy,cz)=pos;
 		st=-radius+1;
 		x=st;
-		while(x<radius,1000,
-			y=st;
-			while(y<radius,1000,
-				z=st;
-				while(z<radius,1000,
-					pos=l(cx+x,cy+y,cz+z);
-					if(!(replace=='all'||replace==block(pos)),
-						z+=1;
-						continue()
-					);
-					distSqr=x*x+y*y+z*z;
-					if(distSqr<radius*radius,
-						_setBlock(pos,_randomFrom(pallet))
-					);
-					z+=1
-				);
-				y+=1
-			);
-			x+=1
+		volume(st,st,st,radius-1,radius-1,radius-1,
+		    if(_x-st<1000,break);
+            pos=l(_x+cx,_y+cy,_z+cz);
+            if(!(replace=='all'||replace==block(pos)),
+            	continue()
+            );
+            distSqr=_x*_x+_y*_y+_z*_z;
+            if(distSqr<radius*radius,
+            	_setBlock(pos,_randomFrom(pallet))
+            );
 		);
 		_saveHistory()
 	)
@@ -449,31 +438,12 @@ set_pallet()->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
+	l(x1,y1,z1)=positions:0;
+	l(x2,y2,z2)=positions:1;
 	blocks=l();
-	xmin=min(x1,x2);
-	ymin=min(y1,y2);
-	zmin=min(z1,z2);
-	xmax=max(x1,x2);
-	ymax=max(y1,y2);
-	zmax=max(z1,z2);
-	x=xmin;
-	while(x<=xmax,1000,
-		y=ymin;
-		while(y<=ymax,1000,
-			z=zmin;
-			while(z<=zmax,1000,
-				blocks+=block(x,y,z);
-				z+=1
-			);
-			y+=1
-		);
-		x+=1
+	volume(x1,y1,z1,x2,y2,z2,
+	    if(_x-min(x1,x2)<1000,break);
+	    blocks+=block(_x,_y,_z)
 	);
 	_setPlayerData('pallet',blocks);
 	return('Pallet set')
@@ -487,33 +457,10 @@ fill(block)->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
-	xmin=min(x1,x2);
-	ymin=min(y1,y2);
-	zmin=min(z1,z2);
-	xmax=max(x1,x2);
-	ymax=max(y1,y2);
-	zmax=max(z1,z2);
-	x=xmin;
-	while(x<=xmax,1000,
-		y=ymin;
-		while(y<=ymax,1000,
-			z=zmin;
-			while(z<=zmax,1000,
-				_setBlock(l(x,y,z),block);
-				z+=1
-			);
-			y+=1
-		);
-		x+=1
-	);
+    l(x1,y1,z1)=positions:0;
+	l(x2,y2,z2)=positions:1;
 	_saveHistory();
-	filled=((xmax-xmin+1)*(ymax-ymin+1)*(zmax-zmin+1));
+	filled=volume(x1,y1,z1,x2,y2,z2,if(_x-min(x1,x2)<1000,break);_setBlock(l(_x,_y,_z),block););
 	return('Filled '+filled+' block'+_getS(filled))
 );
 
@@ -525,34 +472,15 @@ fill_replace(block1,block2)->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
+	l(x1,y1,z1)=positions:0;
+    l(x2,y2,z2)=positions:1;
 	replaced=0;
-	xmin=min(x1,x2);
-	ymin=min(y1,y2);
-	zmin=min(z1,z2);
-	xmax=max(x1,x2);
-	ymax=max(y1,y2);
-	zmax=max(z1,z2);
-	x=xmin;
-	while(x<=xmax,1000,
-		y=ymin;
-		while(y<=ymax,1000,
-			z=zmin;
-			while(z<=zmax,1000,
-				if(block(x,y,z)==block(block1),
-					_setBlock(l(x,y,z),block2);
-					replaced+=1;
-				);
-				z+=1
-			);
-			y+=1
-		);
-		x+=1
+	volume(x1,y1,z1,x2,y2,z2,
+	    if(_x-min(x1,x2)<1000,break);
+	    if(block(_x,_y,_z)==block(block1),
+        	_setBlock(l(_x,_y,_z),block2);
+        	replaced+=1;
+        );
 	);
 	_saveHistory();
 	return('Replaced '+replaced+' block'+_getS(replaced))
@@ -566,37 +494,17 @@ random_fill()->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
+	l(x1,y1,z1)=positions:0;
+    l(x2,y2,z2)=positions:1;
 	if(!_checkPallet(),
 		return(_getErrorPallet())
 	);
 	pallet=_getPlayerData('pallet');
-	xmin=min(x1,x2);
-	ymin=min(y1,y2);
-	zmin=min(z1,z2);
-	xmax=max(x1,x2);
-	ymax=max(y1,y2);
-	zmax=max(z1,z2);
-	x=xmin;
-	while(x<=xmax,1000,
-		y=ymin;
-		while(y<=ymax,1000,
-			z=zmin;
-			while(z<=zmax,1000,
-				_setBlock(l(x,y,z),_randomFrom(pallet));
-				z+=1
-			);
-			y+=1
-		);
-		x+=1
+	filled=volume(x1,y1,z1,x2,y2,z2,
+	    if(_x-min(x1,x2)<1000,break);
+	    _setBlock(l(_x,_y,_z),_randomFrom(pallet));
 	);
 	_saveHistory();
-	filled=((xmax-xmin+1)*(ymax-ymin+1)*(zmax-zmin+1));
 	return('Filled '+filled+' block'+_getS(filled))
 );
 
@@ -608,39 +516,20 @@ random_fill_replace(block)->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
+	l(x1,y1,z1)=positions:0;
+    l(x2,y2,z2)=positions:1;
 	if(!_checkPallet(),
 		return(_getErrorPallet())
 	);
 	pallet=_getPlayerData('pallet');
 	replaced=0;
-	xmin=min(x1,x2);
-	ymin=min(y1,y2);
-	zmin=min(z1,z2);
-	xmax=max(x1,x2);
-	ymax=max(y1,y2);
-	zmax=max(z1,z2);
-	x=xmin;
-	while(x<=xmax,1000,
-		y=ymin;
-		while(y<=ymax,1000,
-			z=zmin;
-			while(z<=zmax,1000,
-				if(block(x,y,z)==block(block),
-					_setBlock(l(x,y,z),_randomFrom(pallet));
-					replaced+=1
-				);
-				z+=1
-			);
-			y+=1
-		);
-		x+=1
-	);
+	volume(x1,y1,z1,x2,y2,z2,
+	    if(_x-min(x1,x2)<1000,break);
+	    if(block(x,y,z)==block(block),
+        	_setBlock(l(x,y,z),_randomFrom(pallet));
+        	replaced+=1
+        )
+    );
 	_saveHistory();
 	return('Replaced '+replaced+' block'+getS(replaced))
 );
@@ -653,40 +542,21 @@ clone()->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
+	l(x1,y1,z1)=positions:0;
+    l(x2,y2,z2)=positions:1;
 	clear_clipboard();
 	pos=pos(block(pos(player())));
 	pos:0+=0.5;
 	pos:2+=0.5;
 	put(_getPlayerData('clipboard'),'pos',pos);
 	blocks=l();
-	xmin=min(x1,x2);
-	ymin=min(y1,y2);
-	zmin=min(z1,z2);
-	xmax=max(x1,x2);
-	ymax=max(y1,y2);
-	zmax=max(z1,z2);
-	x=xmin;
-	while(x<=xmax,1000,
-		y=ymin;
-		while(y<=ymax,1000,
-			z=zmin;
-			while(z<=zmax,1000,
-				properties=m();
-				for(block_properties(x,y,z),
-					put(properties,_,property(x,y,z,_))
-				);
-				blocks+=l(l(x+0.5,y,z+0.5),block(x,y,z),properties);
-				z+=1
-			);
-			y+=1
-		);
-		x+=1
+	volume(x1,y1,z1,x2,y2,z2,
+	    if(_x-min(x1,x2)<1000,break);
+	    properties=m();
+        for(block_properties(_x,_y,_z),
+        	put(properties,_,property(_x,_y,_z,_))
+        );
+        blocks+=l(l(x+0.5,y,z+0.5),block(_x,_y,_z),properties);
 	);
 	put(_getPlayerData('clipboard'),'blocks',blocks);
 	copied=length(blocks);
@@ -703,15 +573,14 @@ rotate(angle)->(
 	center=_getPlayerData('clipboard'):'pos';
 	for(_getPlayerData('clipboard'):'blocks',
 		pos=_:0;
-		x=pos:0;
-		z=pos:2;
+		l(x,y,z)=pos;
 		dx=x-center:0;
 		dz=z-center:2;
 		nangle=angle+_getAngle2d(dx,dz);
 		d=sqrt(dx*dx+dz*dz);
 		x=d*cos(nangle)+center:0;
 		z=d*sin(nangle)+center:2;
-		put(_,0,l(x,pos:1,z));
+		put(_,0,pos);
 		
 		facing=_:2:'facing';
 		if(facing!=null,
@@ -833,42 +702,17 @@ move(dx,dy,dz)->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
+	l(x1,y1,z1)=positions:0;
+	l(x2,y2,z2)=positions:1;
 	blocks=l();
-	xmin=min(x1,x2);
-	ymin=min(y1,y2);
-	zmin=min(z1,z2);
-	xmax=max(x1,x2);
-	ymax=max(y1,y2);
-	zmax=max(z1,z2);
-	nxmin=xmin+dx;
-	nymin=ymin+dy;
-	nzmin=zmin+dz;
-	nxmax=xmax+dx;
-	nymax=ymax+dy;
-	nzmax=zmax+dz;
-	x=xmin;
-	while(x<=xmax,1000,
-		y=ymin;
-		while(y<=ymax,1000,
-			z=zmin;
-			while(z<=zmax,1000,
-				put(blocks,null,block(x,y,z));
-				if(!(x>=nxmin&&x<=nxmax&&y>=nymin&&y<=nymax&&z>=nzmin&&z<=nzmax),
-					_setBlock(l(x,y,z),'air')
-				);
-				z+=1
-			);
-			y+=1
-		);
-		x+=1
+	volume(x1,y1,z1,x2,y2,z2,
+	    if(_x-min(x1,x2)<1000,break);
+	    put(blocks,length(blocks),_);
+	    if(_x+dx<max(x1,x2)&&_y+dy<max(y1,y2)&&_z+dz<max(z1,z2),
+	        _setBlock(l(x,y,z),'air')
+	    )
 	);
-	for(blocks,
+	moved=for(blocks,
 		pos=pos(_);
 		x=pos:0+dx;
 		y=pos:1+dy;
@@ -876,7 +720,6 @@ move(dx,dy,dz)->(
 		_setBlock(l(x,y,z),_)
 	);
 	_saveHistory();
-	moved=((xmax-xmin+1)*(ymax-ymin+1)*(zmax-zmin+1));
 	return('Moved '+moved+' block'+_getS(moved))
 );
 
@@ -888,12 +731,8 @@ stack(stx,sty,stz)->(
 		return(_getErrorPositions())
 	);
 	positions=_getPlayerData('positions');
-	x1=positions:0:0;
-	y1=positions:0:1;
-	z1=positions:0:2;
-	x2=positions:1:0;
-	y2=positions:1:1;
-	z2=positions:1:2;
+	l(x1,y1,z1)=positions:0;
+    l(x2,y2,z2)=positions:1;
 	xmin=min(x1,x2);
 	ymin=min(y1,y2);
 	zmin=min(z1,z2);
