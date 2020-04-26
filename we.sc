@@ -17,7 +17,7 @@ global_maxSize=1000000;
 __on_player_clicks_block(player, block, face)->(
 	if(_checkGamemode()&&get(query(player,'holds','mainhand'),0)==global_wand,
 		pos=pos(block);
-		schedule(0,'_scheduledplace',block(pos));
+		schedule(0,'_scheduledPlace',block(pos));
 		without_updates(set(pos,'air'));
 		message=_setPos(0,pos);
 		if(message,
