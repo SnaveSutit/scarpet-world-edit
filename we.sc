@@ -1,3 +1,5 @@
+print('Successfully loaded scarpet WordlEdit!');
+
 __command()->(
 	return('Scarpet World Edit by andrew_10 and SnaveSutit')
 );
@@ -42,7 +44,7 @@ __on_player_uses_item(player,item,hand)->(
     block=block(query(player,'look')*5+pos(player));
 
     if(_holdsWand(),
-        message=\(1,pos(block));
+        message=_setPos(1,pos(block));
         print(message)
     )
 	if(item:0==global_brush,
