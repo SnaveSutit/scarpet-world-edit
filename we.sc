@@ -19,14 +19,14 @@ global_maxSize=1000000;
 __on_player_clicks_block(player, block, face)->(
 	if(_checkGamemode()&&_holdsWand(),
 		pos=pos(block);
-		schedule(0,'_scheduledPlace',block(pos));
-		without_updates(set(pos,'air'));
+		schedule(0,'_scheduledplace',block);
+		//without_updates(set(pos,'air'));
 		message=_setPos(0,pos);
 		print(message)
 	)
 );
 
-_holdsWand()->return get(query(player(),'holds','mainhand'),0)==global_wand;
+_holdsWand()->return (get(query(player(),'holds','mainhand'),0)==global_wand);
 
 _scheduledPlace(block)->(
 	without_updates(set(pos(block),block))
@@ -41,12 +41,12 @@ __on_player_right_clicks_block(player,item,hand,block,face,hitvec)->(
 
 __on_player_uses_item(player,item,hand)->(
     if(hand!='mainhand'||!_checkGamemode(),return());
-    block=block(query(player,'look')*5+pos(player));
+    block=block(query(player,'trace',5,'blocks'));
 
     if(_holdsWand(),
         message=_setPos(1,pos(block));
         print(message)
-    )
+    );
 	if(item:0==global_brush,
 		if(!_checkPallet(),
 			print(_getErrorPallet());
@@ -79,11 +79,11 @@ __on_player_uses_item(player,item,hand)->(
 );
 
 __on_tick()->(
-    for(players('*'),
+    for(player('*'),
         if(!_checkGamemode(),return());
 		positions=_getPlayerData('positions');
-		l(x1,y1,z1)=positions:0;
-		l(x2,y2,z2)=positions:1;
+		l(x1,y1,z1)=positions:0||l(0,0,0);
+		l(x2,y2,z2)=positions:1||l(0,0,0);
 		particle_rect('dust 1 0 0 0.5', x1,y1,z1,x1+1,y1+1,z1+1,1);
 		particle_rect('dust 0 1 0 0.5', x2,y2,z2,x2+1,y2+1,z2+1,1);
 		if(_checkPositions()&&_getPlayerData('show_selection'),
@@ -783,6 +783,12 @@ stack(stx,sty,stz)->(
 			y+=1
 		);
 		x+=1
+	);
+	stacked=volume(x1,y1,z1,x2,y2,z2,
+	    block=_;
+	    loop(stx,
+	        
+	    )
 	);
 	_saveHistory();
 	times=((stx+1)*(sty+1)*(stz+1)-1);
